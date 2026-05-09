@@ -223,4 +223,5 @@ def cross_reference(fam_names: list[str], pob_names: list[str]) -> list[str]:
     matched_keys = set(fam_normalized.keys()) & set(pob_normalized.keys())
 
     matched = [pob_normalized[key] for key in matched_keys]
-    return sorted(matched, key=lambda x: normalize_name(x))
+    # Sort by last name (names are in "Last, First" format)
+    return sorted(matched, key=str.casefold)
