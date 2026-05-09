@@ -14,6 +14,72 @@ Single-page web application for generating lifeboat familiarisation attendance l
 | Excel Parsing | **openpyxl** (read xlsx files) |
 | PDF Generation | **WeasyPrint** (HTML-to-PDF with CSS styling) |
 | Python Version | 3.14+ |
+| Containerization | **Docker** (handles WeasyPrint system deps) |
+
+## Containerization
+
+### Why Docker?
+
+WeasyPrint requires system libraries (Pango, Cairo, GDK-PixBuf, fontconfig) that vary across operating systems. Docker ensures:
+- Consistent environment across development and production
+- No manual system dependency installation
+- Easy deployment to any Docker-capable host
+
+### Docker Files
+
+**Dockerfile**
+```dockerfile
+FROM python:3.14-slim
+
+# Install WeasyPrint system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    shared-mime-info \
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 10000
+
+CMD ["python", "app.py"]
+```
+
+**docker-compose.yml**
+```yaml
+services:
+  web:
+    build: .
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./uploads:/app/uploads  # Optional: persist uploads
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+```
+
+### Docker Commands
+
+| Command | Description |
+|---------|-------------|
+| `docker compose up --build` | Build and run the app |
+| `docker compose up -d` | Run in background (detached) |
+| `docker compose down` | Stop and remove containers |
+| `docker compose logs -f` | Follow container logs |
+
+### Development vs Production
+
+- **Development:** Mount source as volume for hot-reload
+- **Production:** Copy source into image, use gunicorn/uvicorn
 
 ## Application Flow
 
@@ -108,6 +174,9 @@ Single-page web application for generating lifeboat familiarisation attendance l
 ```
 Lifeboat/
 ├── app.py                    # Flask application entry point
+├── Dockerfile                # Container image definition
+├── docker-compose.yml        # Container orchestration
+├── .dockerignore             # Files excluded from Docker build
 ├── requirements.piptools     # Top-level dependencies
 ├── requirements.txt          # Compiled dependencies (via uv)
 ├── pytest.ini               # Test configuration
@@ -179,7 +248,8 @@ Minimum columns:
 6. **Create lifeboat artwork** - SVG illustration for PDF header
 7. **Wire everything together** - Full integration
 8. **Add error handling** - User-friendly error messages
-9. **Test** - Unit tests for parser and generator
+9. **Containerize** - Create Dockerfile and docker-compose.yml
+10. **Test** - Unit tests for parser and generator
 
 ## Sample Excel Data for Testing
 
@@ -204,6 +274,6 @@ PDF should list: **Jane Doe**, **Bob Wilson** (present on both lists)
 
 ## Notes
 
-- WeasyPrint requires system dependencies (Pango, Cairo) - will document in README
+- WeasyPrint system dependencies (Pango, Cairo) handled by Docker
 - PDF designed for A4 paper, landscape optional for long lists
 - Consider adding vessel name input field for PDF customization
