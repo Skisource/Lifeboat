@@ -1,9 +1,65 @@
 """Excel file parsing for familiarisation and POB lists."""
 
 import re
+from datetime import date, datetime
 from typing import BinaryIO
 
 import openpyxl
+
+
+def parse_expiry_date(value: str) -> date | None:
+    """
+    Parse expiry date from string.
+
+    Args:
+        value: Date string in DD/MM/YYYY format or "Required"
+
+    Returns:
+        date object if valid date, None if "Required" or invalid
+    """
+    if not value or not isinstance(value, str):
+        return None
+
+    value = value.strip()
+
+    if value.lower() == "required":
+        return None
+
+    try:
+        return datetime.strptime(value, "%d/%m/%Y").date()
+    except ValueError:
+        return None
+
+
+def is_due_for_familiarisation(
+    expiry_value: str, reference_date: date | None = None
+) -> bool:
+    """
+    Check if a person is due for familiarisation.
+
+    Args:
+        expiry_value: The expiry date string or "Required"
+        reference_date: Date to compare against (defaults to today)
+
+    Returns:
+        True if person needs familiarisation (Required or date <= reference_date)
+    """
+    if reference_date is None:
+        reference_date = date.today()
+
+    if not expiry_value or not isinstance(expiry_value, str):
+        return False
+
+    expiry_value = expiry_value.strip()
+
+    if expiry_value.lower() == "required":
+        return True
+
+    expiry_date = parse_expiry_date(expiry_value)
+    if expiry_date is None:
+        return False
+
+    return expiry_date <= reference_date
 
 
 def normalize_name(name: str) -> str:
@@ -25,23 +81,33 @@ def normalize_name(name: str) -> str:
     return name.lower()
 
 
-def parse_familiarisation_list(file: BinaryIO) -> list[str]:
+def parse_familiarisation_list(
+    file: BinaryIO, reference_date: date | None = None
+) -> list[str]:
     """
     Parse familiarisation required list from xlsx file.
 
+    Only includes personnel who are due for familiarisation:
+    - Expiry date is "Required" (first-timers), OR
+    - Expiry date is <= reference_date (overdue or due today)
+
     Expected format:
     - Row 3: Headers (Site, Full Name, Occupation, First Expiry)
-    - Row 4+: Data with names in column B (Full Name)
+    - Row 4+: Data with names in column B, expiry in column D
 
     Args:
         file: File-like object containing xlsx data
+        reference_date: Date to filter against (defaults to today)
 
     Returns:
-        List of personnel names requiring familiarisation
+        List of personnel names due for familiarisation
 
     Raises:
         ValueError: If file format is invalid or required columns missing
     """
+    if reference_date is None:
+        reference_date = date.today()
+
     try:
         wb = openpyxl.load_workbook(file, read_only=True, data_only=True)
     except Exception as e:
@@ -53,17 +119,24 @@ def parse_familiarisation_list(file: BinaryIO) -> list[str]:
 
     names = []
     for row in ws.iter_rows(min_row=4, values_only=True):
-        if len(row) < 2:
+        if len(row) < 4:
             continue
 
         name = row[1]
-        if name and isinstance(name, str) and name.strip():
+        expiry = row[3]
+
+        if not name or not isinstance(name, str) or not name.strip():
+            continue
+
+        expiry_str = str(expiry) if expiry else ""
+
+        if is_due_for_familiarisation(expiry_str, reference_date):
             names.append(name.strip())
 
     wb.close()
 
     if not names:
-        raise ValueError("No names found in familiarisation file")
+        raise ValueError("No personnel due for familiarisation found")
 
     return names
 

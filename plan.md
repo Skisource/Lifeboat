@@ -111,12 +111,15 @@ services:
 
 ## Processing Logic
 
-1. **Parse Familiarisation List** - Extract names/IDs of personnel requiring familiarisation
-2. **Parse POB List** - Extract names/IDs of personnel currently on board
-3. **Cross-Reference** - Find personnel who are both:
-   - On the familiarisation required list
+1. **Parse Familiarisation List** - Extract names and expiry dates of personnel requiring familiarisation
+2. **Filter by Due Date** - Include only personnel where:
+   - Expiry date is "Required" (first-timers), OR
+   - Expiry date is <= today (overdue or due today)
+3. **Parse POB List** - Extract names of personnel currently on board
+4. **Cross-Reference** - Find personnel who are both:
+   - On the filtered familiarisation list (due or first-timer)
    - Currently on board (in POB)
-4. **Generate PDF** - Create attendance notice with matched personnel
+5. **Generate PDF** - Create attendance notice with matched personnel
 
 ## PDF Template Design
 
