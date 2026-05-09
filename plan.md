@@ -185,6 +185,8 @@ Lifeboat/
 ├── static/
 │   ├── css/
 │   │   └── style.css        # Custom styles (Bulma extensions)
+│   ├── js/
+│   │   └── main.js          # Drag-drop and form handling
 │   └── images/
 │       └── lifeboat.svg     # Twin-fall lifeboat illustration
 ├── templates/
