@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm 2cm;
+            @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 10px;
+                color: #666;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 11pt;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #1a3a5c;
+        }
+
+        .header-icon {
+            margin-bottom: 10px;
+        }
+
+        .header-icon svg {
+            width: 120px;
+            height: 80px;
+        }
+
+        .title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1a3a5c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14pt;
+            color: #2d7a9c;
+            font-weight: bold;
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 10px 15px;
+            background-color: #f8fafc;
+            border-left: 4px solid #2d7a9c;
+        }
+
+        .meta-item {
+            font-size: 10pt;
+        }
+
+        .meta-label {
+            font-weight: bold;
+            color: #1a3a5c;
+        }
+
+        .personnel-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .personnel-table th {
+            background-color: #1a3a5c;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .personnel-table th:first-child {
+            width: 8%;
+            text-align: center;
+        }
+
+        .personnel-table th:last-child {
+            width: 15%;
+            text-align: center;
+        }
+
+        .personnel-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .personnel-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .personnel-table td:first-child {
+            text-align: center;
+            color: #666;
+            font-size: 10pt;
+        }
+
+        .personnel-table td:last-child {
+            text-align: center;
+        }
+
+        .checkbox {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #1a3a5c;
+            border-radius: 3px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .footer-icon {
+            font-size: 14pt;
+            margin-right: 5px;
+        }
+
+        .total-count {
+            margin-top: 15px;
+            text-align: right;
+            font-size: 10pt;
+            color: #1a3a5c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-icon">
+            <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                <!-- Twin-fall Lifeboat -->
+                <!-- Hull -->
+                <path d="M15 50 Q20 65 60 65 Q100 65 105 50 L100 45 Q60 55 20 45 Z" fill="#e85d04" stroke="#1a3a5c" stroke-width="2"/>
+                <!-- Canopy -->
+                <path d="M25 45 Q60 25 95 45 Q60 50 25 45" fill="#ff8c42" stroke="#1a3a5c" stroke-width="1.5"/>
+                <ellipse cx="60" cy="42" rx="30" ry="8" fill="none" stroke="#1a3a5c" stroke-width="1" stroke-dasharray="3,2"/>
+                <!-- Davit arms (twin-fall) -->
+                <line x1="30" y1="20" x2="35" y2="40" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
+                <line x1="90" y1="20" x2="85" y2="40" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
+                <!-- Falls (ropes) -->
+                <line x1="30" y1="5" x2="30" y2="20" stroke="#1a3a5c" stroke-width="2"/>
+                <line x1="90" y1="5" x2="90" y2="20" stroke="#1a3a5c" stroke-width="2"/>
+                <!-- Hooks -->
+                <circle cx="30" cy="20" r="3" fill="#1a3a5c"/>
+                <circle cx="90" cy="20" r="3" fill="#1a3a5c"/>
+                <!-- Waves -->
+                <path d="M5 70 Q15 65 25 70 Q35 75 45 70 Q55 65 65 70 Q75 75 85 70 Q95 65 105 70 Q115 75 120 70" fill="none" stroke="#2d7a9c" stroke-width="2" opacity="0.6"/>
+                <path d="M0 75 Q10 70 20 75 Q30 80 40 75 Q50 70 60 75 Q70 80 80 75 Q90 70 100 75 Q110 80 120 75" fill="none" stroke="#2d7a9c" stroke-width="1.5" opacity="0.4"/>
+            </svg>
+        </div>
+        <div class="title">Please Attend Lifeboat 1</div>
+        <div class="subtitle">For Familiarisation After The Drill</div>
+    </div>
+
+    <div class="meta">
+        <div class="meta-item">
+            <span class="meta-label">Date:</span> {{ date }}
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Vessel:</span> {{ vessel_name or "________________" }}
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Personnel:</span> {{ personnel|length }}
+        </div>
+    </div>
+
+    <table class="personnel-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Attended</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for person in personnel %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ person }}</td>
+                <td><span class="checkbox"></span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-count">
+        Total: {{ personnel|length }} personnel
+    </div>
+
+    <div class="footer">
+        ⚓ Safety First • Maritime Compliance Notice • Lifeboat Familiarisation Attendance Record
+    </div>
+</body>
+</html>
